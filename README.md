@@ -1,4 +1,4 @@
-# 5CBlockchainClub
+# Welcome to the 5C Blockchain Club
 This is a public repository for the 5C Cryptocurrency Blockchain. We will post relevant research and related information here! The first step is to create a GitHub account! First, find a profile picture and save it to your computer's desktop. Then, you can create a GitHub account [here](https://github.com/). You can change your profile photo through the following link [here](https://github.com/settings/profile). Make sure that when you click this link, you hit **Upload New Picture**.
 
 Now, assuming that you have set up a GitHub account, you're going to want to set up an editor. Normally, people use something called vim. You can also use a different editor by using the following command in your terminal or command prompt window: `git config --global core.editor <editor-command>`. Now, before I continue on with this tutorial, I'm going to stop assuming base knowledge and explain a few key concepts and tools that will be helpful for this journey. First, I'm going to give an introduction to GitHub and the use of Git. I hope you will have fun learning! :tada::+1: :octocat: 
