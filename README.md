@@ -57,12 +57,12 @@ Now, one of the most powerful features of GitHub is the use of branches. When wo
 
 Now, if we have a project that we're working on in GitHub, we're most likely going to do most of the work in a different branch than the master branch. For example, while editing this MarkDown file, I'm in a seperate branch called "develop" so I can easily revert to a previous, working version of my file if things go wrong while I'm editing at 2:00 A.M. How do we create and use branches?
 * Creating a new Branch
-  ** Creating a branch is done by `git checkout -b [name_of_your_new_branch]`
-  ** You change the branch you're working in (e.g. from master to develop) by running `$ git checkout [name_of_your_new_branch]`
-  ** You push the branch onto GitHub through `git push origin [name_of_your_new_branch]`
-  ** You can see all the branches created using `git branch`
-  ** For citation and for additional information on branches, I suggest looking [here](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches).  
-  ** Once you're ready to merge a branch to master, you can do so through command line or through GitHub's browswer itself.  
+  * Creating a branch is done by `git checkout -b [name_of_your_new_branch]`
+  * You change the branch you're working in (e.g. from master to develop) by running `$ git checkout [name_of_your_new_branch]`
+  * You push the branch onto GitHub through `git push origin [name_of_your_new_branch]`
+  * You can see all the branches created using `git branch`
+  * For citation and for additional information on branches, I suggest looking [here](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches).  
+  * Once you're ready to merge a branch to master, you can do so through command line or through GitHub's browswer itself.  
 
 ## Pull Requests
 Pull requests let others know about the changes you've pushed to a GitHub respository. Once you send a pull request, people can review the set of changes, discuss modifications, and then push follow-up commits. Once you and those you're working with (or you, if you're doing a solo project) are finished with the modifications, you can merge a pull request to the master branch or a local branch if you're not comfortable with master-merging yet. A good tutorial on this is available [here](https://yangsu.github.io/pull-request-tutorial/). If you really wanted to, you could do a pull request with an edited version of this repository.   
