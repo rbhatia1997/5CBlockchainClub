@@ -1,4 +1,4 @@
-# 5CBlockchainClub
+# Welcome to the 5C Blockchain Club
 This is a public repository for the 5C Cryptocurrency Blockchain. We will post relevant research and related information here! The first step is to create a GitHub account! First, find a profile picture and save it to your computer's desktop. Then, you can create a GitHub account [here](https://github.com/). You can change your profile photo through the following link [here](https://github.com/settings/profile). Make sure that when you click this link, you hit **Upload New Picture**.
 
 Now, assuming that you have set up a GitHub account, you're going to want to set up an editor. Normally, people use something called vim. You can also use a different editor by using the following command in your terminal or command prompt window: `git config --global core.editor <editor-command>`. Now, before I continue on with this tutorial, I'm going to stop assuming base knowledge and explain a few key concepts and tools that will be helpful for this journey. First, I'm going to give an introduction to GitHub and the use of Git. I hope you will have fun learning! :tada::+1: :octocat: 
@@ -11,7 +11,7 @@ Assuming that you have created a GitHub account, you may be wondering how we use
 *  `rm` which r(e)m(oves) the file! It deletes a file permanently, be careful. 
 *  `sudo` which stands for super user do. Be careful with this and look it up before using.
 
-For the purposes of this document, I will be using terminal on a Mac. Take your time reading up on the command line before we headinto the next step of our journey - Git and GitHub. 
+For the purposes of this document, I will be using terminal on a Mac. Take your time reading up on the command line before we head into the next step of our journey - Git and GitHub. 
 
 # Git and GitHub
 GitHub is a version control system that has Git at it's base. GitHub allows people to store files and work together online. In addition, it allows people to keep a live log of everything related to a set of files or code. It's extremely popular worldwide and used in millions of projects, even [Bitcoin](https://github.com/bitcoin/bitcoin). Now, if we want to use Git on the command line, we're going to want to download and install it on our computer. You can also get [GitHub Desktop](https://help.github.com/desktop/guides/getting-started-with-github-desktop/).  
