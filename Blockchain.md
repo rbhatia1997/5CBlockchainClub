@@ -16,4 +16,38 @@ A good example is that if I have the answer to how many Jellybeans are in a jar 
 
 Before we begin, it may be useful to download this free software called [Postman](https://www.getpostman.com/). This is useful as an HTTP Client, but we'll get to this later! 
 
+I'm basically going to paraphrase from this website [here](https://www.w3schools.com/tags/ref_httpmethods.asp) for this next part. If you want to read it instead of my commentary, go ahead. 
 
+### What is HTTP?
+
+Let's start by discussing what HTTP even means. It stands for Hypertext Transfer Protocol. It creates communication between clients and servers. A browser, like Chrome, may submit an HTTP request to a server and the server will respond to the client (browser). You may be familiar when people make "404 not working" jokes; what they are referring to is an error message. Specifically, in the Hypertext Transfer Protocol (HTTP) standard response code. It is what happens when a client wants to follow a broken or dead link. 
+
+### HTTP Methods
+
+There are many types of HTTP methods, which include GET, POST, PUT, and DELETE. 
+
+**GET Method** is used to request data. It's a very popular HTTP method. Important to note that data is visible to everyone in the URL!
+
+**POST Method** is used to send data to a server and create or update a resource. The data to be sent to the server is stored in something called the "request body" of the HTTP request. Data isn't displayed in the URL. Also no restrictions on data length. 
+
+**PUT Method** is used to send data to a server and create or update a resource. You may ask, why is this different than the POST method? Essentially, the PUT method will produce the same results when called repeatedly whereas the POST method will create the same resource multiple times. 
+
+**DELETE Method** is used to delete a resource specified. That's pretty self-explanatory. 
+
+I could discuss the HEAD method or OPTIONS method, but the methods above are the most common. A quick google search solves most queries here. 
+
+Why do we care about HTTP Requests? Well, in the tutorial, we will be talking to the Blockchain via HTTP requests. 
+
+## Things to Download 
+
+It's unfortunate that we can't just jump into coding without downloading resources to help us. I wish we lived in a perfect world where all the libraries and code we'd need were just already in every computer. That being said, here are things you need to download. 
+
+Make sure the latest version of [Python](https://www.python.org/downloads/) is downloaded onto your computer. 
+
+Additionally, make sure [pip](https://www.makeuseof.com/tag/install-pip-for-python/) is on your computer. What's pip? It's a package manager for Python - it stands for pip installs packages. 
+
+sAlso, this is an aside, if you're a Mac user, you may want to install something called [homebrew](https://brew.sh/). It makes installing packages pretty easy - for example, in order to install python on my computer, all I had to do was type in `brew install python3`. This should also let you have pip installed automatically! 
+
+Additionally, you'll want to install Flask and the Requests library. Apparently this can be done using the following command: `pip install Flask==0.12.2 requests==2.18.4` through terminal or command prompt. This actually gave me an error message because of the way permissions worked on the computer I was using. I fixed this by adding `sudo` (super-user-do) before pip in my command. 
+
+Now, you're going to want an IDE (Integrated development environment), which helps software applications provide tools for software development. They're pretty neat; we're going to need one for coding in Python. I love Visual Studio or Sublime; for python specifically, people use [PyCharm](https://www.jetbrains.com/pycharm/). Now, after all this, we can finally get to Blockchain. 
