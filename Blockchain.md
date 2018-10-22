@@ -12,4 +12,8 @@ Now, hash functions generally are one-way or irreversible (hmm.. there may be a 
 
 A good example is that if I have the answer to how many Jellybeans are in a jar in my room and I want to challenge my friends to get the correct answer, I can make sure that they won't cheat by asking them to compare the hash that they receive from their answer to a hash that I give them. I can run the answer througha hash function to recieve that hash. Hashes are often used in the context of verifying information without revealing it to the people who are verifying. 
 
-##  
+##  HTTP Requests & How They Work
+
+Before we begin, it may be useful to download this free software called [Postman](https://www.getpostman.com/). This is useful as an HTTP Client, but we'll get to this later! 
+
+
