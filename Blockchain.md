@@ -51,3 +51,32 @@ sAlso, this is an aside, if you're a Mac user, you may want to install something
 Additionally, you'll want to install Flask and the Requests library. Apparently this can be done using the following command: `pip install Flask==0.12.2 requests==2.18.4` through terminal or command prompt. This actually gave me an error message because of the way permissions worked on the computer I was using. I fixed this by adding `sudo` (super-user-do) before pip in my command. 
 
 Now, you're going to want an IDE (Integrated development environment), which helps software applications provide tools for software development. They're pretty neat; we're going to need one for coding in Python. I love Visual Studio or Sublime; for python specifically, people use [PyCharm](https://www.jetbrains.com/pycharm/). Now, after all this, we can finally get to Blockchain. 
+
+## Representing a Blockchain 
+
+Please note that this is taken from the tutorial I referenced in the beginning of the document. 
+
+```python 
+   class Blockchain(object):
+    def __init__(self):
+        self.chain = []
+        self.current_transactions = []
+        
+    def new_block(self):
+        # Creates a new Block and adds it to the chain
+        pass
+    
+    def new_transaction(self):
+        # Adds a new transaction to the list of transactions
+        pass
+    
+    @staticmethod
+    def hash(block):
+        # Hashes a Block
+        pass
+
+    @property
+    def last_block(self):
+        # Returns the last Block in the chain
+        pass
+```
