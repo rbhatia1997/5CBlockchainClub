@@ -1,7 +1,7 @@
 # Introduction to Blockchain
 
 ## Very Basic Fundamentals of Blockchain 
-This part of the tutorial is heavily influenced by the following [link](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46). Now, what is Blockchain? It's an immutable (not changeable), sequential chain of records. Such records are called **blocks.** They contain transactions or any type of data you want to store in them. They're linked together using hashes. 
+This part of the tutorial is heavily influenced by the following [link](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46). In fact, it should be seen as an addendum to this tutorial with more clarification. Now, what is Blockchain? It's an immutable (not changeable), sequential chain of records. Such records are called **blocks.** They contain transactions or any type of data you want to store in them. They're linked together using hashes. 
 
 ### What are Hashes?
 This part of the tutorial is heavily influenced by the following [link](https://learncryptography.com/hash-functions/what-are-hash-functions). A hash function takes an input value, and from the input value, creates an output determined on what the input value is. 
