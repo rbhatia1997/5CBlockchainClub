@@ -270,3 +270,206 @@ class Blockchain(object):
 
 Now, obviously, you can make the algorithm more difficult by modifying the number of leading zeros. It can make a massive difference in time taken to just add another leading zero. 
 
+## Blockchain & API
+
+We're going to use Python [Flask](http://flask.pocoo.org/docs/0.12/quickstart/#a-minimal-application), which is a microframework, and allows us to talk to the blockchain using the internet via HTTP requests. There will be three methods that create a new transaction, mine a block, and return the full blockchain. I would definitely read up on Flask if you have the time. I'll give a really quick demonstration. Let's say that we have a python code that simply returns "Hello World!":
+
+```python
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+```
+
+Now, we can run the application using the flask command: 
+
+```
+$ export FLASK_APP=hello.py
+$ flask run
+ * Running on http://127.0.0.1:5000/
+ ```
+If you went to http://127.0.0.1:5000/ you should see the hello world greeting. You could even have this publicly available through ```flask run --host=0.0.0.0```. So that's pretty neato. 
+
+The following is the code needed to instantiate (create) a node, create a name for the node, instantiate the blockchain class, create the mine endpoint (a GET Request!), create a new transaction endpoint (a POST request!), and create a chain endpoint which gives the full blockchain. Then, we will run it on port 5000. 
+
+The idea of Flask is that we will map URL paths to some logic that's run. Flask will take the URL, figure out what the user wants, and pass it to a python function for handling it. You match paths (URL) to routes (python function that does stuff). An endpoint as used above is basically an identifier used in determining what your code should do when a user gives an input. We see this in the ```@app.route``` below. 
+
+Putting it all together: 
+
+```python
+import hashlib
+import json
+from textwrap import dedent
+from time import time
+from uuid import uuid4
+
+from flask import Flask
+
+
+class Blockchain(object):
+    ...
+
+
+# Instantiate our Node
+app = Flask(__name__)
+
+# Generate a globally unique address for this node
+node_identifier = str(uuid4()).replace('-', '')
+
+# Instantiate the Blockchain
+blockchain = Blockchain()
+
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    return "We'll mine a new Block"
+  
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    return "We'll add a new transaction"
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+
+So we end up with something like this for the transaction endpoint (what the user sends to the server):
+
+```
+{
+ "sender": "my address",
+ "recipient": "someone else's address",
+ "amount": 5
+}
+```
+
+## Endpoints for Various Methods
+
+We can add new transactions to the block through the following:
+
+```python 
+
+import hashlib
+import json
+from textwrap import dedent
+from time import time
+from uuid import uuid4
+
+from flask import Flask, jsonify, request
+
+...
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    values = request.get_json()
+
+    # Check that the required fields are in the POST'ed data
+    required = ['sender', 'recipient', 'amount']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+
+    response = {'message': f'Transaction will be added to Block {index}'}
+    return jsonify(response), 201
+```
+
+We can create the mining endpoint, which calculates proof of work, rewards miners via 1 coin, and forges a new block by adding it to the chain. 
+
+```python
+import hashlib
+import json
+
+from time import time
+from uuid import uuid4
+
+from flask import Flask, jsonify, request
+
+...
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    # We run the proof of work algorithm to get the next proof...
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+
+    # We must receive a reward for finding the proof.
+    # The sender is "0" to signify that this node has mined a new coin.
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
+
+    # Forge the new Block by adding it to the chain
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, previous_hash)
+
+    response = {
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    return jsonify(response), 200
+```
+
+The address of our [node](https://lisk.io/academy/blockchain-basics/how-does-blockchain-work/nodes) (any active electronic device that maintains copy of blockchain, arranged in binary trees, supports blockchain network) is the recipient of the mined block. Now, interacting with the blockchain... 
+
+## Interacting with Blockchain 
+
+Now, here's where Postman comes in handy. It allows us to send POST and GET requests to our server. I actually plan to use an IoT board to send these requests in the future - and I'm sure any device capable of HTTP requests will be able to so that's really powerful. First, start the server by typing the following in terminal: ``` python blockchain.py``` with the following: 
+
+Step 1) ```pip install pipenv``` (you need to install this if you haven't) 
+Step 2) ```pipenv install``` (do this if step 1 wasn't completed) 
+Step 3) Run the following in terminal: 
+```
+$ pipenv run python blockchain.py
+$ pipenv run python blockchain.py -p 5001
+$ pipenv run python blockchain.py --port 5002 
+```
+
+Here's where I had some trouble with the tutorial. For some reason, I had my pip in Python 2.7 whereas the tutorial was using Python 3.7. Typing out ```which pip3.7``` showed where my pip binary was installed. Now, I just uninstalled pip on 2.7 by doing ```pip2.7 uninstall pip```. Now, to be safe, I'm just going to call pip via Python3.7 by doing the following: ```python3.7 -m pip <commands>```. Thus, doing the following worked: 
+
+```python3.7 -m pip install Flask==0.12.2 requests==2.18.4```
+```python3.7 -m pip install --upgrade pip```
+```python3.7 -m pip install pipenv```
+```python3.7 -m pipenv install```
+
+So after 30 minutes of debugging to find the above problem, just know that I just yelled "Yeah Boi" at the top of my lungs in my dorm room. I love college. Anyways, let's see this in action:
+
+### Making a POST Request
+
+1) Open Postman
+2) Change the Method to POST 
+3) Enter the following into the space to the left of the blue SEND button: ```http://localhost:5000/transactions/new```
+4) Hit the Body Tab and then hit the raw tab. 
+5) Enter the following:
+```
+{
+ "sender": "d4ee26eee15148ee92c6cd394edd974e",
+ "recipient": "someone-other-address",
+ "amount": 5
+}
+```
+
+### Making a GET Request
+
+1) Open Postman
+2) Change the Method to GET
+3) Enter the following into the space to the left of the blue SEND button: ```http://localhost:5000/mine```
+
+
+
