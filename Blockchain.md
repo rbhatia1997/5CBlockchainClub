@@ -452,14 +452,14 @@ Here's where I had some trouble with the tutorial. For some reason, I had my pip
 ```pipenv run python3.7 blockchain.py -p 5001```
 ```pipenv run python3.7 blockchain.py --port 5002```
 
-So after 30 minutes of debugging to find the above problem, just know that I just yelled "Yeah Boi" at the top of my lungs in my dorm room. I love college. Anyways, let's see this in action:
+So after 1 hour of debugging to find the above problem, just know that I just yelled "Yeah Boi" at the top of my lungs in my dorm room. I love college. Anyways, let's see this in action:
 
 ### Making a POST Request
 
 1) Open Postman
 2) Change the Method to POST 
 3) Enter the following into the space to the left of the blue SEND button: ```http://localhost:5000/transactions/new```
-4) Hit the Body Tab and then hit the raw tab. 
+4) Hit the Body Tab and then hit the raw tab. Make sure JSON not text is selected. 
 5) Enter the following:
 ```
 {
@@ -468,6 +468,7 @@ So after 30 minutes of debugging to find the above problem, just know that I jus
  "amount": 5
 }
 ```
+This may return an error actually because you haven't specified an address. 
 
 ### Making a GET Request
 
@@ -477,5 +478,60 @@ So after 30 minutes of debugging to find the above problem, just know that I jus
 
 Now, let's say that we mine two blocks - giving three in total (remember the genesis one). You can inspect the full chain through requesting ```http://localhost:5000/chain```. 
 
+## Consensus
+
+So that's cool, right? You have a basic blockchain that accepts transactions and allows people to mine new blocks. But the whole point of blockchain is that it's decentralized; rather, that it's not just on localhost (or some central point of control). The lack of a single authority is what makes the system more fair and more secure! Okay, so how do we do that - and once we do, how can we make sure it's accurately reflecting the same blockchain. 
+
+So this is called the problem of consensus and uses a consensus algorithm if you want more than one node in a network. Again, nodes are like the computer we're using or another active device. 
+
+Before we do this, let's make sure we have a way to let nodes know about neighboring nodes on the network. So we'll have ```/nodes/register``` accept a list of new nodes via URL; then, ```/nodes/resolve``` will implement the consensus algorithm - ensuring the node has a correct chain. We update the blockchain accordingly (the constructor, specifically):
+
+```python
+...
+from urllib.parse import urlparse
+...
 
 
+class Blockchain(object):
+    def __init__(self):
+        ...
+        self.nodes = set()
+        ...
+
+    def register_node(self, address):
+        """
+        Add a new node to the list of nodes
+        :param address: <str> Address of node. Eg. 'http://192.168.0.5:5000'
+        :return: None
+        """
+
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
+```
+We can use the set() command to hold the list of nodes. No matter how many times we add a specific node, it'll add it only once. Again, the tutorial I'm heavily copying/basing this explanation off of actually has some security flaws. For the sake of tutorial, I'm ignoring them. 
+
+### Conflict Management
+
+Conflict is bad. A conflict in blockchain is when one node has a different chain to another node. To resolve this, you can create a rule that the longest valid chain is authoratative (it's the one that allows the others to reach consensus, de-facto). Using this as our consensus algorithm, we can achieve consensus on the nodes. I'm not going to paste code anymore - all functions/methods are in the blockchain.py file. 
+
+The method valid_chain() checks if a chain is valid by going through each block and verifying the hash and proof. 
+
+The method resolve_conflicts() will loop through neighboring nodes, downloading their chains, and verifying them using the above method. If a valid chain is found that has a greater length, replace it with the current one. Then, we add this as a route (endpoint). 
+
+Now, we're going to basically emulate two nodes on the network. To do so, we're going to have one terminal open that's running on localhost port 5000 and another on localhost port 5001. Yes, I know they're both on local host, but we can change this functionality fairly easily. 
+
+Step 1) ```pipenv run python3.7 blockchain.py --port 5002```
+Step 2) Register the node using the command that registers nodes, which is done by doing the following:
+Step 3) Open Postman
+Step 4) Have the HTTP Request set to POST
+Step 5) Have the URL as the following: http://localhost:5000/nodes/register
+Step 6) Hit the body tab and then the raw tab (make sure JSON not text is selected)
+Step 7) Enter the following:
+```
+{
+    "nodes": ["http://0.0.0.0:5002"]
+}
+}
+```
+
+Then, you can mine some blocks on node 2 and call the GET method with ```http://localhost:5000/nodes/resolve```. It should update to show that node 2 is the authoritative node. So that's really cool. I hope this was helpful! 
