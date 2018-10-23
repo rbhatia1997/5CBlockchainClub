@@ -531,7 +531,6 @@ Step 7) Enter the following:
 {
     "nodes": ["http://0.0.0.0:5002"]
 }
-}
 ```
 
 Then, you can mine some blocks on node 2 and call the GET method with ```http://localhost:5000/nodes/resolve```. It should update to show that node 2 is the authoritative node. So that's really cool. I hope this was helpful! 
