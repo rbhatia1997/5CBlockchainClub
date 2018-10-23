@@ -446,7 +446,11 @@ Here's where I had some trouble with the tutorial. For some reason, I had my pip
 ```python3.7 -m pip install Flask==0.12.2 requests==2.18.4```
 ```python3.7 -m pip install --upgrade pip```
 ```python3.7 -m pip install pipenv```
+
 ```python3.7 -m pipenv install```
+```pipenv run python3.7 blockchain.py```
+```pipenv run python3.7 blockchain.py -p 5001```
+```pipenv run python3.7 blockchain.py --port 5002```
 
 So after 30 minutes of debugging to find the above problem, just know that I just yelled "Yeah Boi" at the top of my lungs in my dorm room. I love college. Anyways, let's see this in action:
 
@@ -470,6 +474,8 @@ So after 30 minutes of debugging to find the above problem, just know that I jus
 1) Open Postman
 2) Change the Method to GET
 3) Enter the following into the space to the left of the blue SEND button: ```http://localhost:5000/mine```
+
+Now, let's say that we mine two blocks - giving three in total (remember the genesis one). You can inspect the full chain through requesting ```http://localhost:5000/chain```. 
 
 
 
