@@ -12,6 +12,39 @@ Now, hash functions generally are one-way or irreversible (hmm.. there may be a 
 
 A good example is that if I have the answer to how many Jellybeans are in a jar in my room and I want to challenge my friends to get the correct answer, I can make sure that they won't cheat by asking them to compare the hash that they receive from their answer to a hash that I give them. I can run the answer througha hash function to recieve that hash. Hashes are often used in the context of verifying information without revealing it to the people who are verifying. 
 
+### An Addendum to Hashes and Hashing Algorithms
+
+A cryptographic hash function is a special type of hash function that has properties valuable to cryptography. It maps data of whatever size to a bit-string (array data structure) of fixed size. You cannot revert this function; the only way to find its original input is to literally search every possible combination of possible inputs to see if they match. The ideal cryptographic hash function has the following properties:
+
+* Deterministic 
+    * Same message gives the same hash. 
+* Quick 
+    * Easy and fast to compute hash value for a message. 
+* Secure
+    * Infeasible to enerate a message from its hash value unless through brute-force. 
+* Unique
+    * Small change to the message would dramatically change the hash value. 
+* Unique (Part 2) 
+    * Infeasible to find two messages with same hash value
+
+So the point is basically to take a string of any length as input and produce a fixed-length hash value. We therefore want the hash function to have the following:
+
+* Pre-image resistance
+    * Given a hash value h, it should be difficult to find some message m such that h = hash(m). These are vulnerable to things called pre-image attacks. 
+* Second pre-image resistance
+    * Given an input m1, it should be difficult to find an input m2 so hash(m1) = hash(m2). If you lack this, you are vulnerable to... second-preimage attacks. Creative.
+* Collision resistance 
+    * It should be difficult to find two different messages, m1 and m2, such that hash(m1) = hash(m2). This pair is a hash collision. A hash value may need to be twice as long as that required for pre-image resistance otherwise collisions may be found by birthday attack. 
+
+There's this thing in cryptography called salt. It's random data that is used as additional input to a one-way function that hashes data. So, let's say that we have a password that we want to store as data. We will randomly generate a salt value, which will look like this: ```84B03D034B409D4E```. Now, we will add this salt value to the password and then we run the hash value on the Salt value + password, we have added and greater security. The likelihood of a hacker obtaining a password through hash tables and something called rainbow tables. 
+
+In terms of what a hash is, it's a value computed from a base input number using a hashing function. It's considered a summary of the original data. Almost as if you squeezed a paper document so much that it isn't even readable. So, there are a lot of hashing algorithms. MD5, a popular one, is actually broken because you can just google the hash in the search box and know the input. Salt values may help but still. 
+
+There's now SHA (secure hash algorithm) which is a cryptographic hash function designed by the NSA. SHA-0 and SHA-1 are compromised. SHA-1 was built on a similar principle as MD4 and MD5. Now, a safer algorithm, is actually SHA-2 (rather, it's a family of algorithms). This includes SHA-256. Now, it actually shares properties with SHA-1 so it's probably going to be compromised in the future. So let's look at SHA-3, which is at least 25% faster than SHA-2. SHA-3 uses the sponge construction where the data is first absorbed into something called a sponge and then "squeezed" out. Cool. 
+
+My sources for this information are the following: [link1](https://en.wikipedia.org/wiki/Cryptographic_hash_function); [link2](https://en.wikipedia.org/wiki/Salt_(cryptography)); [link3](https://blog.jscrambler.com/hashing-algorithms/)
+
+
 ##  HTTP Requests & How They Work
 
 Before we begin, it may be useful to download this free software called [Postman](https://www.getpostman.com/). This is useful as an HTTP Client, but we'll get to this later! 
