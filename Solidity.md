@@ -107,5 +107,6 @@ function _createThing (string _nameOfThing, uint _numberOfThing) private {
     thingArray.push(Thing(_nameofThing,_numberOfThing)); 
 }
 ```
-
 ## Getting Even Deeper into Solidity...
+
+As you may know already, functions can return values by using the keyword ```return```. In Solidity, we also have to consider function modifiers that indicate 
