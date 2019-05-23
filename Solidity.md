@@ -109,4 +109,47 @@ function _createThing (string _nameOfThing, uint _numberOfThing) private {
 ```
 ## Getting Even Deeper into Solidity...
 
-As you may know already, functions can return values by using the keyword ```return```. In Solidity, we also have to consider function modifiers that indicate 
+As you may know already, functions can return values by using the keyword ```return```. In Solidity, we also have to consider function modifiers that indicate the state of the function. For example, if I wanted to declare a function with the ability to view, I can simply just write ```view``` in the function like so:
+
+```javascript
+function someFunction() public view returns (string) {
+    // only lets you view data not modify it!
+}
+```
+
+You could also use ```pure``` functions, which means you are not even accessing data that's in the application. In other words, you can write a function that doesn't read from the state of the app (only function parameters). An example is provided below: 
+
+```javascript
+function _multiply(uint a, uint b) private pure returns (uint) {
+  return a * b; // pure because uses only parameters.
+}
+```
+Something unique about Solidity is that you are actually specifying the return type value! 
+
+Now, as you may or may not be familiar with, hash functions are very commonly used for blockchain purposes. The hash function basically maps an input to a random value where a small change in the input corresponds to a large change in the hash (you can imagine this being useful for cryptographic purposes). 
+
+Ethereum has the hash function called ```keccak256``` which is a version of SHA3. It expects a single parameter of type bytes, so one must "pack" any parameters before calling this hash function. This is accomplished in Solidity, for example, by doing the following: ```keccak256(abi.encodePacked("aaaab"));``` 
+
+Something to note is that in Solidity, you should typecast by using parenthesis like so: ```uint8 c = a * uint8(b); ```
+
+So obviously, with this knowledge, you can write private and public functions. This will be helpful when writing decentralized applications or smart contracts. 
+
+Now, you can use something called an ```event``` which enables your contract to communicate anything on the blockchain to the front-end app, which listens for certain events and takes action when they happen. The ```event``` keyword,which contains the parameters and result, is written similar to a function. 
+
+You could use the keyword ```emit``` to indicate an event being fired. This would usually be put inside the function and looks like the following:
+
+```javascript
+// declare the event
+event IntegersAdded(uint x, uint y, uint result);
+
+function add(uint _x, uint _y) public {
+  uint result = _x + _y;
+  // fire an event to let the app know the function was called:
+  emit IntegersAdded(_x, _y, result);
+  return result;
+  // From the cryptozombies tutorial
+}
+```
+
+So one thing that you can do once you've written your back-end application is connect it to a front-end application (for example, a Javascript front end). This can be accomplished by utilizing the ```Web3.js``` library that is in Ethereum for Javascript. 
+
