@@ -8,7 +8,7 @@ Let's get excited about Ethereum. It's time for a new era of the Internet - one 
 
 The cool part about learning Ethereum is that you can build decentralized applications (called dapps) that utilize the very technology of cryptocurrency/blockchain. Games, decentralized markets, cryptocurrency wallets, and other financial applications are all possible.
 
-"Ethereum is different than Bitcoin in that it allows for smart contracts which can be described as highly programmable digital money. Imagine automatically sending money from one person to another but only when a certain set of conditions are met." [Source](https://blog.coinbase.com/a-beginners-guide-to-ethereum-46dd486ceecf)
+"Ethereum is different than Bitcoin in that it allows for smart contracts which can be described as highly programmable digital money. Imagine automatically sending money from one person to another but only when a certain set of conditions are met." [Source.](https://blog.coinbase.com/a-beginners-guide-to-ethereum-46dd486ceecf)
 
 Some applications which exist include Cent (social network where you earn money by posting), Veil (placing bets on real world events), and CryptoKitties (collecting and breeding digital cats). Before I continue, I should plug the resources available on Ethereum's website, which will likely be more helpful than my rambling. 
 
@@ -153,3 +153,19 @@ function add(uint _x, uint _y) public {
 
 So one thing that you can do once you've written your back-end application is connect it to a front-end application (for example, a Javascript front end). This can be accomplished by utilizing the ```Web3.js``` library that is in Ethereum for Javascript. 
 
+## Mappings and Addresses: Ethereum Blockchain Details
+
+So, the Ethereum blockchain is made up of ```accounts```, which are like bank accounts (in that they have a balance of Ether). Ether is the currency used on the Ethereum blockchain. You can send and receive Ether payments to other accounts just like a wire transfer to a bank account. Each account has an ```address``` which is a number similar to a bank account number. It's a unique identifier that points to the account. An address is owned by a specific user (or smart contract). 
+
+So, in Solidity, ```Mappings``` are another way of storing organized data in Solidity. You can define a ```mapping``` by doing the following: 
+
+```javascript
+// For a financial app, storing a uint that holds the user's account balance:
+mapping (address => uint) public accountBalance;
+// Or could be used to store / lookup usernames based on userId
+mapping (uint => string) userIdToName;
+// Taken from cryptozombies tutorial. 
+```
+A mapping is just a key-value store for storing and looking up data; you would enter the key in order to access the value. The first example above would take an address as the key and return a uint or number as the value. 
+
+The mappings can be used to keep track of information and to whom that information is owned by (like a user who owns something on the decentralized application). 
