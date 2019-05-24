@@ -168,4 +168,82 @@ mapping (uint => string) userIdToName;
 ```
 A mapping is just a key-value store for storing and looking up data; you would enter the key in order to access the value. The first example above would take an address as the key and return a uint or number as the value. 
 
-The mappings can be used to keep track of information and to whom that information is owned by (like a user who owns something on the decentralized application). 
+The mappings can be used to keep track of information and to whom that information is owned by (like a user who owns something on the decentralized application). But you need to update your methods in order to actually use the mappings; you can use this by using the ```msg.sender```, which refers to the address of the person (or smart contract) who called the current function. A function execution starts with a external caller; a contract does nothing until someone calls one of its functions. 
+
+So for example, if you had a mapping to a favorite number and a function that sets a number to the favorite number, it would look like the following (example for cryptozombies): 
+
+```javascript
+mapping (address => uint) favoriteNumber;
+
+function setMyNumber(uint _myNumber) public {
+  // Update our `favoriteNumber` mapping to store `_myNumber` under `msg.sender`
+  favoriteNumber[msg.sender] = _myNumber;
+  // ^ The syntax for storing data in a mapping is just like with arrays
+}
+
+function whatIsMyNumber() public view returns (uint) {
+  // Retrieve the value stored in the sender's address
+  // Will be `0` if the sender hasn't called `setMyNumber` yet
+  return favoriteNumber[msg.sender];
+}
+```
+
+In this case, anyone could call the setMyNumber function and store a uint in the contract, which would be tied to their address. Then, when calling whatIsMyNumber, they'd be returned the uint that was stored. 
+
+Although this is a really simple example, the beauty of blockchain is shown. The ```msg.sender``` is secure because you would have to steal the private key associated with the Ethereum address in order to modify someone's data. 
+
+Another feature of Solidity is ```require```, which makes it so that the function will throw an error and stop executing if some condition isn't true. You can think of this like a try-catch or while statement. This looks like the following:
+
+```javascript
+function compareName(string _name) public returns (string) {
+  require(keccak256(abi.encodePacked(_name)) == keccak256(abi.encodePacked("Isaac")));
+  // no built-in function for string comparison, so compare the hash values. 
+  // If it's true, proceed with the function:
+  return "Hi!";
+}
+```
+
+In this case, if you were to use a different name other than Isaac, the function would not run (execute) and it would throw an error. Require is useful for verifying conditions before running a function! 
+
+So you think you're hot shit because you can write one extremely long contract? Well, guess what, Solidity thinks that you should slow your roll bro. In other words, Solidity has a feature for contracts called ```inheritance``` that makes it possible to split code logic across multiple contracts. This is accomplished by using the ```is``` keyword; let's say that you had a contract called Cookie. You could create another contract called Chocolate Chip that would inherit from the Cookie contract like so: ```contract ChocolateChip is Cookie```. If you were to compile and deploy ChocolateChip, it would have access to the functions (public ones) that are defined in Cookie. 
+
+Now, when you have files that reference each other, you're likely going to use the ```import``` ability, which would look like this in practice: ```import "./someothercontract.sol";```. This, of course, assumes that the other contract is available in the same directory as the file we are calling this import statement from. 
+
+In Solidity, you can store variables in storage or in memory. Storage refers to variables stored permanently on the blockchain; memory variables are temporary and are erased between external function calls to the contract. It's similar to RAM whereas the storage is similar to information on a hard-disk (or heap vs. stack in C++). Solidity mostly handles these keywords by default; however, there are times where you do need to use the keywords (e.g. with structs and arrays within functions). 
+
+The example given in the cryptozombies tutorial clarifies this:
+
+```javascript
+contract SandwichFactory {
+  struct Sandwich {
+    string name;
+    string status;
+  }
+
+  Sandwich[] sandwiches;
+
+  function eatSandwich(uint _index) public {
+    // Sandwich mySandwich = sandwiches[_index];
+
+    // ^ Seems pretty straightforward, but solidity will give you a warning
+    // telling you that you should explicitly declare `storage` or `memory` here.
+
+    // So instead, you should declare with the `storage` keyword, like:
+    Sandwich storage mySandwich = sandwiches[_index];
+    // ...in which case `mySandwich` is a pointer to `sandwiches[_index]`
+    // in storage, and...
+    mySandwich.status = "Eaten!";
+    // ...this will permanently change `sandwiches[_index]` on the blockchain.
+
+    // If you just want a copy, you can use `memory`:
+    Sandwich memory anotherSandwich = sandwiches[_index + 1];
+    // ...in which case `anotherSandwich` will simply be a copy of the 
+    // data in memory, and...
+    anotherSandwich.status = "Eaten!";
+    // ...will just modify the temporary variable and have no effect 
+    // on `sandwiches[_index + 1]`. But you can do this:
+    sandwiches[_index + 1] = anotherSandwich;
+    // ...if you want to copy the changes back into blockchain storage.
+  }
+}
+```
