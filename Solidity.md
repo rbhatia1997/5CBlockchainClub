@@ -247,3 +247,74 @@ contract SandwichFactory {
   }
 }
 ```
+
+Now, in addition to private and public,Solidity has two more types of visibility for functions (confusing, I know). Specificially, these are ```internal``` and ```external``` respectively. Internal is the same as private, except it's accessible to contracts that inherit from this contract. Amazing, specific, and probably useful if you still want your function to be private but use it in modular code. External is similar to public, except these functions can only be called outside of the contract (they can't be called by functions inside that contract). The syntax here is the same as public and private - so you just add the keyword after the function. 
+
+Now, you may want to interact with other people's contract. This can be done by defining an ```interface```. An interface is similar to defining a contract, except you are only declaring the functions that you want to interact with and the function bodies aren't defined (they are ended with a semicolon). So let's say you created an interface to use a function in a contract someone else wrote (this is all taken from the cryptozombies tutorial):
+
+```javascript
+//(Contract someone else wrote):
+contract LuckyNumber {
+  mapping(address => uint) numbers;
+
+  function setNum(uint _num) public {
+    numbers[msg.sender] = _num;
+  }
+
+  function getNum(address _myAddress) public view returns (uint) {
+    return numbers[_myAddress];
+  }
+}
+```
+
+```javascript
+// Thus, the interface looks like...
+contract NumberInterface {
+    // Yes, you still use the contract keyword.
+  function getNum(address _myAddress) public view returns (uint);
+}
+```
+Now, using the interface in a contract (again, taken from the cryptozombies site)... 
+
+```javascript
+contract MyContract {
+  address NumberInterfaceAddress = 0xab38... 
+  // ^ The address of the FavoriteNumber contract on Ethereum
+  NumberInterface numberContract = NumberInterface(NumberInterfaceAddress);
+  // Now `numberContract` is pointing to the other contract
+
+  function someFunction() public {
+    // Now we can call `getNum` from that contract:
+    uint num = numberContract.getNum(msg.sender);
+    // ...and do something with `num` here
+  }
+}
+```
+This, again, assumes that the contract can interact with any other contract given that the function are public or external. 
+
+Now, one thing to note that is interesting about Solidity is that functions can return multiple values. You can either return values or just one specific value by using colons as such: ```(,,valueToReturn)```. Commonly, this is used when you want a specific value from another smart contract (e.g. the cryptokitties smart contract):
+
+```javascript
+    (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);
+// assuming we have a uint variable called kittyDna and a address pointing to the cryptokitty smart contract. 
+```
+
+So remember how earlier I said that require was similar to an if-else conditional? Well, Solidity actually has ```if``` as a keyword, which operates as one would expect in a programming context. 
+
+## Advanced Solidity Concepts
+
+Solidity is unique in that after you deploy a contract to Ethereum, it's immutable (it can never be modified or updated again). You need to ensure that the smart contract you upload is without flaws because you literally cannot change it once you start. 
+
+Because of this, it would make sense to have functions that would enable a user to change certain "permanent" parts of an dapp (e.g. having a function that can set the address of a contract in case it changes in the future). 
+
+So, obviously, if we set this function as external, it would be a massive security flaw (allowing all users the ability to change the function). Therefore, to handle these specific cases where you want to give a specific person special privledges (e.g. yourself), you can use ```Ownable```. 
+
+The Ownable contract, taken from the OpenZeppelin Solidity library, is a library of secure and community-vetted smart contracts. If you were to look up this contact, you'd find some special stuff. First, a ```constructor``` (an optional special function) has the same name as the contract. It only gets run once (when the contract is first created). Next, a function ```modifier```, which are half-functions to modify other functions. This Ownable contract contains a function called ```onlyOwner```, which is so popular that most Solidity DApps start with a copy/paste of the Ownable contract. 
+
+A function modifier, as mentioned previously, looks like a function but uses the keyword modifier instead of the keyword function. It can't be called directly (instead, the modifier's name is attached to the end of a function definition to change its behavior). So, if you have a modifier, it will execute code its code first then when it hits ```_:``` (placed at the end of the modifier's code), it executes the original function's code. The most common use for modifiers is to add require checks before a function executes. If you add the ```onlyOwner``` modifier to a function, it makes it such that only the owner of the contract can call that function. You would simply add this keyword after the function (e.g. after ```public``` keyword). 
+
+Now, in Solidity, users have to pay every time they execute a function on the DApp using a currency called ```gas```. Gas is purchased with Ether (Ether has to be spent to execute functions on the dApp). How much gas depends on how complex that function's logic is. Each individual operation has a gas cost that's based on the computational resources necessary to perform that operation. Code optimization, as you can imagine, is crucial for Solidity. 
+
+Why is gas necessary you might be asking?It's incredible stupid to have people pay to use your functions, isn't it? No, not exactly. Ethereum is extremely secure. The beauty of its security stems from the fact that every node on the network needs to run that same function to verify the output when you call it; the fact that so many nodes need to verify a function when it runs makes Ethereum decentralized and immutable. Having users pay is one way to prevent people from having an infinite loop or hog up all the network resources. 
+
+So how can we save gas? One way is struct packing. Specifically, having multiple uints inside a struct using a smaller-sized uint when possible allows Solidity to pack variables together to take up less storage. Note that using uint8 versus uint won't change anything normally; however, inside a struct, the rules change. It's a good rule to also cluster identical data types together. 
