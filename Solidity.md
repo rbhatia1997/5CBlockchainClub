@@ -318,3 +318,46 @@ Now, in Solidity, users have to pay every time they execute a function on the DA
 Why is gas necessary you might be asking?It's incredible stupid to have people pay to use your functions, isn't it? No, not exactly. Ethereum is extremely secure. The beauty of its security stems from the fact that every node on the network needs to run that same function to verify the output when you call it; the fact that so many nodes need to verify a function when it runs makes Ethereum decentralized and immutable. Having users pay is one way to prevent people from having an infinite loop or hog up all the network resources. 
 
 So how can we save gas? One way is struct packing. Specifically, having multiple uints inside a struct using a smaller-sized uint when possible allows Solidity to pack variables together to take up less storage. Note that using uint8 versus uint won't change anything normally; however, inside a struct, the rules change. It's a good rule to also cluster identical data types together. 
+
+So, Solidity has time units that provide native units for dealing with time (kind of like millis in Arduino). The variable ```now``` will give you the unix timestamp of the latest block (number of seconds since January 1st, 1970). Solidity also contains seconds, minutes, days, hours, weeks, and years as keywords.
+
+Another thing that you can do in Solidity is pass a storage pointer to a struct as an argument to a private/internal function. In order words, if you have a function, the function can be something like ```function _functionName(StructName storage _parameterName) internal```. This would allow a user to pass a reference to the struct, which is useful in the instance you want to pass a reference to an object instead of the ID and looking it up inside the function.
+
+Function modifiers also can take arguments as well. This is important in Solidity as you can have a modifier check a certain requirement (e.g. age limit) before you run a function. 
+
+One really, really, ```really``` important thing about the Solidity blockchain is that view functions don't cost any gas when they're called externally by a user. This is because they don't change anything on the blockchain. Normally, you would have to create a transaction on the blockchain - running it on every single node - and costing a user gas. 
+
+Please for the love of God use external view functions whenever possible. Do realize that internal view functions will cost gas because the other function creates a transaction on Ethereum and needs to be verified. 
+
+Everytime you write or change a piece of data, it's permanently written in the blockchain forever. Please avoid writing data to storage unless it's absolutely needed. The ```memory``` keyword is useful for creating new arrays without needing to write anything to storage; it only exists until the end of the function call. This looks like the following (taken from cryptozombies tutorial): 
+
+```javascript
+function getArray() external pure returns(uint[]) {
+  // Instantiate a new array in memory with a length of 3
+  uint[] memory values = new uint[](3);
+  // Add some values to it
+  values.push(1);
+  values.push(2);
+  values.push(3);
+  // Return the array
+  return values;
+}
+```
+
+Side note: for loops work the same (nearly the same) way in Solidity as they do in Javascript/C++. It can be helpful to use for-loops to traverse arrays and store data temporarily in them. 
+
+## Making People Pay... in Solidity
+
+Super quick summary from everything before. Private means callable from other functions in the contract; internal is like private but it can be called by inherited contracts; external can only be called outside the contract; public can be called anywhere, anytime. 
+
+State modifiers include view, which indicates no data will be changed, and pure, which indicates no data saved or read from the blockchain. But there is another modifier that is just... beautiful. 
+
+This modifier is ```payable``` and it's a function that can receive Ether. Because money (Ether) and data (transactions) live on Ethereum, you can call a function and pay money to the contract at the same time. ```ether``` (yes, lowercase) is a built-in keyword to reference the amount of Ether. Techincally this means you can call a function from web3.js (DApp's front-end) by doing the following (taken from Cryptozombies): 
+
+```javascript
+// Assuming `OnlineStore` points to your contract on Ethereum:
+OnlineStore.buySomething({from: web3.eth.defaultAccount, value: web3.utils.toWei(0.001)})
+```
+
+
+
