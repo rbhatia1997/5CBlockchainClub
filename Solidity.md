@@ -385,3 +385,56 @@ This is pretty bad though because of the way blockchain works. In Ethereum, call
 So why exactly does a random number generate using keccak give trouble? If I were to publish a transaction only to my own node and not share the results, I could effectively keep running a function until I get a desired result and solve the next block. 
 
 There are external sources on how to properly deal with random numbers in Solidity. There is the concept of an ```oracle```, which helps you access resources safely outside of the Ethereum blockchain. 
+
+## ERC721 & Crypto-Collectibles
+
+So Ethereum and blockchain is fun, but this is the surface of how wacky and cool things can be. We're going to get into the fun, exciting world of ```tokens```. A token on Ethereum is just a smart contract that follows some common rule - it implements a standard set of functions that all the other token contract share from. The contract will have a mapping that indicates how much balance each address has. In other words, the token is a contract that keeps track of who owns how much of the token and contains function to enable trading of such tokens. 
+
+So, applications that work for one token (specifically talking about the ERC20 token now) will work for the others. When an exchange adds a new ERC20 token, it needs to add another smart contract. Users can indicate where to send tokens to and the exchange can tell the contract to send the tokens back out to users when they request a withdraw. Tokens that act like currencies will find benefit from the exchange model (hmm... sounds familiar ;)). 
+
+Okay, great, but what if I want to build a decentralized application that doesn't necessarily ```vibe``` with the notion of a currency. What I mean to say is that you can divide currency, like Ethereum, but it's a bit harder to cleanly divide something like a [crypto-kitty](https://www.cryptokitties.co/). You can't own 0.232342 of a Crypto-Kitty (I mean you could, but that's pretty gross and difficult to keep track of). So where am I getting with this?
+
+There's another token standard called ```ERC721``` which is really solid for crypto-collectibles (and oh man are they fun). One really fun example is the Formula 1 (yeah, the racing company) non-fungible token - the [first car to be realsed for the F1 Delta Time](https://opensea.io/assets/0x3c62e8de798721963b439868d3ce22a5252a7e03/111). This sold for 415.9 Ethereum (which is around 112,708.9 USD at the time of writing). So ERC721 tokens are not interchangeable because each one is unique; you can only trade them in whole units and each one has a unique ID. The benefits of using a token standard is the fact that people could integrate the tokens into their platform easily. The ERC721 standard is the following:
+
+```javascript
+contract ERC721 {
+  event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+  event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+
+  function balanceOf(address _owner) external view returns (uint256);
+  function ownerOf(uint256 _tokenId) external view returns (address);
+  function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
+  function approve(address _approved, uint256 _tokenId) external payable;
+}
+``` 
+These methods would need to be implemented in order to implement the token contract. In order to implement the contract, the first thing to do is copy the interface to its own Solidity file and import it using the following command (for ERC721): ```import "./erc721.sol";```. You can inherit from multiple contracts by adding a comma in the ```is``` contract statement. In utilizing ERC721 in your Solidity code, make sure that you read the contract properly (e.g. using the ```Transfer``` event after transferring Eth). Make sure to include the keyword ```emit``` before Transfer (and Approval). You want to be really careful that your user doesn't transfer the zombie to an address of 0 (burning a token, sending it to an unaccessible address). One security feature in writing smart contracts is preventing overflows and underflows. An overflow is when you increase a uint8 at 255 by 1 and an underflow is when you decrease a uint8 at 0 by 1. This is like a clock resetting (i.e. going from 00:00 to 23:59 and vice versa). This can create undesireable behavior. 
+
+So to prevent these issues from ever being a problem, there is a library called SafeMath that prevents these issues by default. A library is a contract in Solidity that attaches functions to native data types. To use SafeMath you would write ```using SafeMath for uint256``` for example at the top of the function. Be sure to import the SafeMath library and include the .sol file in the directory. If you snoop around in the .sol file for SafeMath, you will come across the keyword ```assert```, which is similar to require except assert will not return a user's gas when a function fails (i.e. you want to use this when something goes horribly wrong in the code). 
+
+But what about the case where you're using a uint16 or uint32? You need to actually implement two more libraries for that (SafeMath16 and SafeMath32). While Solidity should really automatically do all this for us,it doesn't as of my writing this. 
+
+Something that's important to note that really should've been noted later is commenting. We use the ```//``` for single line comments. However, multi-line comments can be used by starting with ```/*``` and closing with ```*/``` just like in the Arduino IDE. The standard in Solidity is to use a format called ```natspec```, which looks like the following (taken from cryptozombies tutorial):
+
+```javascript
+/// @title A contract for basic math operations
+/// @author Ronak B.
+/// @notice explains to a user what the contract / function does. @dev is for explaining extra details to developers.
+contract Math {
+  /// @notice Multiplies 2 numbers together
+  /// @param x the first uint.
+  /// @param y the second uint.
+  /// @return z the product of (x * y)
+  /// @dev This function does not currently check for overflows
+  //@param and @return are for describing what each parameter and return value of a function are for.
+  function multiply(uint x, uint y) returns (uint z) {
+    // This is just a normal comment, and won't get picked up by natspec
+    z = x * y;
+  }
+}
+```
+
+## Front-End for Applications & Web3.js
+
+Ethereum has a Javascript library from the Ethereum foundation called Web3.js. When you call a function on a smart contract, you need to query one of the nodes on the Ethereum network and tell it the address of the smart contract, the function you want to call, and the variables you want to pass to that function. Ethereum nodes communicate using ```JSON-RPC```, which looks like absolute horse-shit. Web3.js hides these queries with cleaner syntax. You can install web3.js to the project by using ```npm install web3```. There's also a github with the .js file and you can include the following import statement: ```<script language="javascript" type="text/javascript" src="web3.min.js"></script>```. 
+
+So when you are writing the front-end application for the
