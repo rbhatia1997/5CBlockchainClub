@@ -358,6 +358,30 @@ This modifier is ```payable``` and it's a function that can receive Ether. Becau
 // Assuming `OnlineStore` points to your contract on Ethereum:
 OnlineStore.buySomething({from: web3.eth.defaultAccount, value: web3.utils.toWei(0.001)})
 ```
+Value, in this case, specifies how much Ether to send. Now, you probably want to withdraw that Ethereum from the contract eventually - so do add the following contract (assuming the Ownable contract is imported properly). 
 
+```javascript
+// From cryptozombies 
+contract GetPaid is Ownable {
+  function withdraw() external onlyOwner {
+    address _owner =  owner();
+    _owner.transfer(address(this).balance);
+    // address(this).balance returns the total balance stored on the contract.
+  }
+}
+```
+If, for some reason, you want to randomly generate numbers in Solidity... it's a bit rough. There's the keccak256 hash function, which can be used to generate a random uint as so (from cryptozombies):
 
+```javascript
+// Generate a random number between 1 and 100:
+uint randNonce = 0;
+uint random = uint(keccak256(abi.encodePacked(now, msg.sender, randNonce))) % 100;
+randNonce++;
+uint random2 = uint(keccak256(abi.encodePacked(now, msg.sender, randNonce))) % 100;
+```
 
+This is pretty bad though because of the way blockchain works. In Ethereum, calling a function on the contract broadcasts it to node/nodes on the network as a transaction. The nodes collect many of these transactions and try to solve a proof of work algorithm and publish that as a block to the network. Once a node solves the proof of work algorithm, the other nodes verify the other node's list of transactions and accept the block. 
+
+So why exactly does a random number generate using keccak give trouble? If I were to publish a transaction only to my own node and not share the results, I could effectively keep running a function until I get a desired result and solve the next block. 
+
+There are external sources on how to properly deal with random numbers in Solidity. There is the concept of an ```oracle```, which helps you access resources safely outside of the Ethereum blockchain. 
