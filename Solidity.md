@@ -437,4 +437,64 @@ contract Math {
 
 Ethereum has a Javascript library from the Ethereum foundation called Web3.js. When you call a function on a smart contract, you need to query one of the nodes on the Ethereum network and tell it the address of the smart contract, the function you want to call, and the variables you want to pass to that function. Ethereum nodes communicate using ```JSON-RPC```, which looks like absolute horse-shit. Web3.js hides these queries with cleaner syntax. You can install web3.js to the project by using ```npm install web3```. There's also a github with the .js file and you can include the following import statement: ```<script language="javascript" type="text/javascript" src="web3.min.js"></script>```. 
 
-So when you are writing the front-end application for the
+So when you are writing the front-end application for your smart application, you want a Web3 provider. Basically, setting up a Web3 provider tells our code which node that we should be talking to handle reads and writes. If you're familiar with REST API calls, this is similar to sending API calls to a remote web server in a traditional web application. There's a third-party service that allows you to host an Ethereum node (so you don't have to). Infura, the service, maintains a set of Ethereum nodes that you are able to access via API for free! You can do this by writing the following: ```var web3 = new Web3(new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws"));``` 
+
+Because a decentralized application is going to be used by many users (who will write to the blockchain and not just read from it), there needs to be a way for users to sign transactions with their private key. Specifically, Ethereum uses a public/private key pair to digitally sign transactions - it's like an extremely secure password for a digital signature. A public key shows people who is signing; the private key means that no one can forge a transaction. 
+
+So, when building a dApp, you are probably going to use a ```metamask``` which allows people to manage private keys in the front-end application. Metamask is a browser extension for chrome and firefox that lets users securely manage their Ethereum accounts and private keys, even allowing such accounts to interact with websites that are using Web3.js.
+
+Metamask injects their web3 provider into the browser in the global JavaScript object web3 - the app can check to see if web3 exists and use web3.currentProvider as the provider. You can require users to have metamask in order to run the decentralized application and there's sample code that will automatically check for its installation available online. Once you've initalized Web3.js to work with MetaMask's Web3 provider, you need to set it up to talk to the smart contract built. Web3.js needs an ```address``` and a ```ABI``` to talk to the contract. Compiling a deploying a smart contract to Ethereum is usually the next step after writing a smart contract; assuming this is done, it gets a fixed address on Ethereum where it will live forever. An ABI is an application binary interface, which is a representation of the contracts' methods in JSON that tells Web3.js how to format function calls in a way that the contract will understand. When you compile a contract to deploy in Ethereum, the Solidity compiler provides the ABI - please save this in addition to the address. 
+
+Once you have the ABI and the contract's address, you can instantiate it in Web3 using the following syntax: 
+
+```javascript
+// Instantiate myContract
+var myContract = new web3js.eth.Contract(myABI, myContractAddress);
+```
+
+So, in practice, it may look like the following:
+
+```javascript
+function startApp() {
+        var yourAddress = "YOUR_CONTRACT_ADDRESS";
+        cryptoZombies = new web3js.eth.Contract(yourABI, yourAddress);
+        // Assuming your ABI is imported via .js file.
+      }
+```
+
+Once the contract is set-up, functions will be called using ```call``` and ```send```. ```Call``` is for view and pure funtions - only running on the local node and doesn't create a transaction on the blockchain. It would look something like this: ```myContract.methods.myMethod(myParameter).call()```. On the other hand, ```send``` will create a transaction and change data on the blockchain; you need to use send for functions that aren't view or pure. Metamask will give the user a prompt to sign a transaction to pay for gas if they want to send a transaction. This all happens automatically when you use send. This would look like the following: ```myContract.methods.myMethod(myParameter).send()```. If a variable is declared public in Solidity, there is agetter function with the same name automatically generated. Now, before continuing, knowing what a ```promise``` in JavaScript will be useful. A good link is available [here](https://www.geeksforgeeks.org/javascript-promises/). Because communicating with the Web3 provider node is asynchronous (like an API call to an external server), a JavaScript promise is used. Once the promise resolves (like a HTTP 200 green light) - the code continues with the ```then``` keyword and logs a ```result``` to the console. An example, from cryptozombies, is available here: 
+
+```javascript
+function getDetails(id) {
+  return urContract.methods.owner(id).call()
+}
+
+// Call the function and do something with the result:
+getContractDetails(15)
+.then(function(result) {
+  console.log("User 15: " + JSON.stringify(result));
+});
+```
+In order to use MetaMask to manage multiple accounts in their extension, you can see which accounts are active on the injected web3 variable by doing the following: ```var userAccount = web3.eth.accounts[0]```. The user can switch the active account at any time in Metamask - which is done using the setInterval loop as follows: 
+
+```javascript
+var accountInterval = setInterval(function() {
+  // Check if account has changed
+  if (web3.eth.accounts[0] !== userAccount) {
+    userAccount = web3.eth.accounts[0];
+    // Call some function to update the UI with the new account
+    updateInterface();
+  }
+}, 100);
+```
+In the real world, you're going to want to use React or Vue.js in the application. For simple application purposes, you could use JQuery. A function can send a transaction to the Web3 provider and chains some event listens: ```receipts``` fires when the transactions is included into a block on Ethereum, which means our zombie has been created/saved on our contract. In addition, ```error``` will fire if there's an issue that prevented the transaction from being included in a block - such as the use rnot sending enough gas. 
+
+One important thing to note is that there is another currency type inside Ether. The smallest sub-unit of Ether is called a ```wei``` and there are 10^18 wei in one Ether. Check this function out:
+
+```javascript
+// This will convert 1 ETH to Wei
+web3js.utils.toWei("1");
+```
+
+To filter events and listen for changes related to the current user, Solidity could use the ```indexed``` keyword. You can query past events using ```getPastEvents``` and even give a time range for filtering the event logs by using ```fromBlock``` and ```toBlock```.  
+
